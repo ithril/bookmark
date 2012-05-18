@@ -1,0 +1,146 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<script type="text/javascript" src="jquery.js"></script>
+
+<style type="text/css">
+.parent{
+	position:relative;
+	width:1000px;
+	margin:0 auto;
+	padding:20px 5px 20px 5px;
+	border:3px solid #333;
+	border-right:0;
+	border-left:0;
+}
+.child{
+	position:relative;
+	display:block;
+	float:left;
+	width:24%;
+	height:120px;
+	padding:1%;
+	padding-bottom:3%;
+	margin-right:3%;
+	margin-left:3%;
+	margin-bottom:4%;
+	margin-top:4%;
+	border:3px solid #333;
+}
+.wrap{
+	width:100%;
+	display:block;
+	position:relative;
+	height:100%;
+}
+.childhead{
+	position:relative;
+	background:white;
+	padding:5px;
+	font-family:Arial, Helvetica, sans-serif;
+	left:5px;
+	top:-20px;
+}
+.childcont{
+	width:100%;
+	height:100%;
+	position:relative;
+}
+
+.clear{
+	clear:both;
+}
+</style>
+<title>Bookmark Project</title>
+</head>
+
+<body>
+URL:<input name="url" id="URL" value="" /><br />
+Title:<input name="title" id="title" value="" /><br />
+Category: <input name="cat" id="cat" value="Trial" /><br />
+Description:<input name="desc" id="desc" value="" /><br />
+<input type="submit" onclick="add(this);" />
+<div class="parent" >
+<div class="wrap">
+</div>
+<div class="clear"></div>
+</div>
+</body>
+<script src="storejs/source/store.js" type="text/javascript"></script>
+<script src="jquery.js" type="text/javascript"></script>
+<script src="jquery.xdomainajax.js" type="text/javascript"></script>
+<script>
+var defaults = {
+	"count": 0,
+	"data": []
+};
+var db = new Store("Bookmarks",defaults);
+
+function add(button){
+	button.disabled = "disabled";
+	var URL = document.getElementById('URL').value;
+	var cat = document.getElementById('cat').value;
+	var desc = document.getElementById('desc').value;
+	var title = document.getElementById('title').value;
+	var c = db.get('count')+1;
+	var data = db.get('data');
+	var flag = true;
+	for(var i=0;i<c-1;i++)
+	{
+		if(data[i].url == URL)
+		{
+			flag = false;
+			break;
+		}
+	}
+	if(flag)
+	{
+		$.get(URL,{},function(res){
+			db.set('count',c);
+			var bookmark = {
+				"time": Date.now(),
+				"category": cat,
+				"url": URL,
+				"provider_url": URL.match(/:\/\/(.[^/]+)/)[1],
+				"description": desc,
+				"title": title,
+				"html": (res.responseText)
+			};
+			data.push(bookmark);
+			db.set('data',data);
+//			$('#a').html((db.get('data')[c-1]));
+		});
+	}
+		else
+			alert("Already exists!");
+		button.disabled = false;
+}
+function createchild(heading,content){
+				
+				var child=$(document.createElement("div"));
+				var span=$(document.createElement("span"));
+				var childcontent=$(document.createElement("div"));
+				child.addClass("child");
+				span.addClass("childhead");
+				span.html(heading);
+				childcontent.addClass("childcont");
+				childcontent.html(content);
+				child.append(span);
+				child.append(childcontent);
+				$(".wrap").append(child);
+	
+	}
+	
+function populate(){
+	var n = db.get('count');
+	var data = db.get('data');
+	for(var i=0;i<n;i++)
+	{
+		createchild(data[i].title,JSON.stringify(data[i]));
+	}
+}
+
+populate();
+</script>
+</html>
