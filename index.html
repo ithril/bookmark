@@ -79,7 +79,6 @@ var defaults = {
 	"data": []
 };
 var db = new Store("Bookmarks",defaults);
-
 function add(button){
 	button.disabled = "disabled";
 	var URL = document.getElementById('URL').value;
@@ -195,7 +194,7 @@ function Search(expression)
 			if(pattern.test(data[i][key]))
 			{
 				absent = false;
-				createchild(data[i].title,data[i].html)
+				createchild(data[i].title,data[i].content)
 				break;
 			}
 		}
