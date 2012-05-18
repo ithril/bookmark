@@ -62,6 +62,8 @@ Title:<input name="title" id="title" value="" /><br />
 Category: <input name="cat" id="cat" value="Trial" /><br />
 Description:<input name="desc" id="desc" value="" /><br />
 <input type="submit" onclick="add(this);" />
+<br />
+Search: <input type="search" name="srch" id="search" onkeyup="Search(this.value);" />
 <div class="parent" >
 <div class="wrap">
 </div>
@@ -106,11 +108,11 @@ function add(button){
 				"provider_url": URL.match(/:\/\/(.[^/]+)/)[1],
 				"description": desc,
 				"title": title,
-				"html": (res.responseText)
+				"content": (res.responseText)
 			};
 			data.push(bookmark);
 			db.set('data',data);
-			createchild(bookmark.title,bookmark.html);
+			createchild(bookmark.title,bookmark.content);
 		});
 	}
 		else
@@ -142,6 +144,67 @@ function populate(){
 	}
 }
 
+function category(cat)
+{
+	$(".wrap").html(" ");
+	var n = db.get('count');
+	var data = db.get('data');
+	var absent = true;
+	for(var i=0;i<n;i++)
+		if(data[i].category.toLowerCase() == cat.toLowerCase())
+		{
+			absent = false;
+			createchild(data[i].title,data[i].content)
+		}
+	if(absent)
+		$(".wrap").html("No bookmark present");
+}
+
+function Search(expression)
+{
+	$('.wrap').html(' ');
+	var q = expression.split("|");
+	params = {};
+	var qn = q.length;
+	for(var i=0; i<qn; i++)
+	{
+		var tmp = q[i].split(":");
+		if(tmp.length == 1)
+		{
+			params.title = tmp[0];
+			params.description = tmp[0];
+			params.content = tmp[0];
+			break;
+		}
+		if(tmp[0]!="title" && tmp[0]!="description" && tmp[0]!="content")
+		{
+			alert("Invalid query");
+			return;
+		}
+		params[tmp[0]] = tmp[1];
+	}
+
+	var n = db.get('count');
+	var data = db.get('data');
+	var absent = true;
+	for(var i=0; i<n; i++)
+	{
+		for(key in params)
+		{
+			var pattern = new RegExp(".*"+escape(params[key])+".*","gi");
+			if(pattern.test(data[i][key]))
+			{
+				absent = false;
+				createchild(data[i].title,data[i].html)
+				break;
+			}
+		}
+	}
+	if(absent)
+	{
+		$('.wrap').html("No bookmark found");
+	}
+}
 populate();
 </script>
 </html>
