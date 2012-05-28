@@ -1,79 +1,3 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<link rel="stylesheet" href="blitzer/style.css" type="text/css" />
-
-<style type="text/css">
-.parent{
-	position:relative;
-	width:1000px;
-	margin:0 auto;
-	padding:20px 5px 20px 5px;
-	border:3px solid #333;
-	border-right:0;
-	border-left:0;
-}
-.child{
-	position:relative;
-	display:block;
-	float:left;
-	width:24%;
-	height:120px;
-	padding:1%;
-	padding-bottom:3%;
-	margin-right:3%;
-	margin-left:3%;
-	margin-bottom:4%;
-	margin-top:4%;
-	border:3px solid #333;
-}
-.wrap{
-	width:100%;
-	display:block;
-	position:relative;
-	height:100%;
-}
-.childhead{
-	position:relative;
-	background:white;
-	padding:5px;
-	font-family:Arial, Helvetica, sans-serif;
-	left:5px;
-	top:-20px;
-}
-.childcont{
-	width:100%;
-	height:100%;
-	position:relative;
-	top:-20px;
-}
-
-.clear{
-	clear:both;
-}
-</style>
-<title>Bookmark Project</title>
-</head>
-
-<body>
-URL:<input name="url" id="URL" value="" /><br />
-Category: <input name="cat" id="cat" /><br />
-<input type="hidden" id="catid" value="0" />
-<input type="submit" onclick="add(this);" />
-<br />
-Search: <input type="search" name="srch" id="search" onkeyup="Search(this.value);" />
-<div class="parent" >
-<div class="wrap">
-</div>
-<div class="clear"></div>
-</div>
-</body>
-<script src="js/storejs/source/store.js" type="text/javascript"></script>
-<script src="js/jquery.js" type="text/javascript"></script>
-<script type="text/javascript" src="js/ui.min.js"></script>
-<script>
-
 //Set default structure for new database
 var defaults = {
 	"categories": [{'id':0,'name':'None','value':'none'}],
@@ -97,6 +21,7 @@ function add(button){
 	var data = db.get('data');		//Retrieve data from localStorage
 	var c = data.length;
 	var flag = true;
+	
 	for(var i=0;i<c;i++)			//Check if URL already exists
 	{
 		if(data[i].url == URL)
@@ -105,6 +30,7 @@ function add(button){
 			break;
 		}
 	}
+	
 	if(flag)						//Insert into LocalStorage if URL is new
 	{
 		$.ajax({
@@ -135,6 +61,7 @@ function add(button){
 					"title": embedly.title,
 					"content": content
 				};
+				
 				data.push(bookmark);			//Add new bookmark to dataset
 				db.set('data',data);			//set new bookmark collection
 				createchild(bookmark.title,bookmark.content);	//Generate tile for new bookmark
@@ -158,6 +85,7 @@ function createchild(heading,content){
 	childcontent.html(content);
 	child.append(span);
 	child.append(childcontent);
+	
 	$(".wrap").append(child);
 }
 
@@ -262,5 +190,3 @@ function suggestCats() {
 			.appendTo( ul );
 	};
 }
-</script>
-</html>
