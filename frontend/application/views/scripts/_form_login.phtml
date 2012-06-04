@@ -1,0 +1,92 @@
+
+<div class="five columns alpha omega">
+    <div id="welcome"><p>
+        EatSleepRIDE is 24/7 motorcycles. Create a Story.
+        Discover Rides. Meet old friends. Make new ones.</p>
+    </div>
+
+</div>
+<div class="login seven columns alpha omega">
+	<div id="login" class="clearfix">
+		<ul class="login-form">
+
+		<form id="login" action="/" method="<?= $this->element->getMethod(); ?>">
+			<div class="login-input">
+				<?= $this->element->username; ?><?= $this->element->pswd; ?>
+				<input type="checkbox" class="remember-me" name="remember-me" id="remember-me" value="1"/>
+				<span class="login-text">Remember me</span>
+				<a class="login-text"><span>Forgot password?</span></a>
+				<?= $this->element->submit; ?> <button class="button" type="submit"><span>Log in</span></button>
+			</div>
+		</form>
+		</ul>
+
+	</div>
+</div>
+
+<script type="text/javascript">
+    $("document").ready( function() {
+        var html = '<div id="forgotPasswordInstruction">' +
+            '<p>Please enter your email address. If it\'s on file, we\'ll send you instructions on how to reset it</p>' +
+
+            '<br /><input id="forgotPasswordEmail" name="forgotPasswordEmail" title="Go" '+
+            'type="text" class="tooltip-north editfield">' +
+			    '<div class="create-action-wrapper">'+
+                    '<div class="create-action"><a class="button post" id="submit"><span>Reset Password</span></a>'+
+                    '<div class="cancel-post">or <a href="">CANCEL</a></div>' +
+                '</div>' +
+            '</div><div class="forgotPasswordResponse" style="display:none"></div>';
+        $dlg = $("<div></div>");
+        $dlg.attr('id', 'forgotPassword')
+            .html(html)
+            .hide()
+            .appendTo($("body"));
+
+        $("a.login-text").click( function() {
+            $("#forgotPassword").show().dialog({
+                autoOpen:true,
+                title:'RESET YOUR PASSWORD',
+                resizable:false,
+                modal:true,
+                show: {effect: 'drop', direction: 'up'},
+                hide: {effect: 'drop', direction: 'down'},
+                width: 300
+            });
+            $("#forgotPasswordInstructions").show();
+            $("#forgotPasswordResponse").hide();
+        });
+        $("#forgotPassword a.button.post").click( function(e){
+            e.preventDefault();
+            var url = "<?= APIURL?>/user/0/password?email="+ $("#forgotPasswordEmail").val();
+
+            $.ajax({ url:url, dataType:"text",async:false, success:function(result) {
+                debugger;
+                
+                //@TODO - test this
+                response = JSON.parse(result);
+                if (response && response.errorcode == 0) {
+                    $("#forgotPasswordInstructions").fadeOut(500, function(e) {
+                       $("#forgotPasswordResponse").html("Please check your inbox for further instructions").fadeIn(500);
+                    });
+                } else {
+                    $("#forgotPasswordInstructions").fadeOut(500, function(e) {
+                        $("#forgotPasswordResponse").html("Hmm. We couldn't find you").fadeIn(500);
+                    });
+                }
+                }
+            });
+
+
+//            ESR.api('/proxy/options','put',data, function(response){
+//
+//
+//            });
+
+        });
+        $("#forgotPassword div.cancel-post").click( function(e){
+            e.preventDefault();
+            $("#forgotPassword").dialog('close').hide();
+        });
+    });
+
+</script>
